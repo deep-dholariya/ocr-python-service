@@ -50,37 +50,39 @@ def prepare_image(image_path):
 
     return temp_path
 
-
 def run_ocr(image_path):
-    """
-    Runs OCR on the given image path and returns the same result shape
-    that was previously printed to stdout by the CLI script:
-      {"success": True, "text": "...", "lines": [...]}
-      {"success": False, "error": "..."}
-    """
-
     temp_path = None
 
     try:
+        print("1. prepare_image started")
+
         temp_path = prepare_image(image_path)
 
+        print("2. Image prepared:", temp_path)
+
+        print("3. Before ocr.predict")
+
         results = ocr.predict(temp_path)
+
+        print("4. After ocr.predict")
 
         lines = []
 
         for result in results:
+            print("5. Result Type:", type(result))
 
             if not isinstance(result, dict):
                 continue
 
             for text in result.get("rec_texts", []):
-
                 text = str(text).strip()
 
                 if text:
                     lines.append(text)
 
         unique_lines = list(dict.fromkeys(lines))
+
+        print("6. Returning JSON")
 
         return {
             "success": True,
@@ -89,6 +91,8 @@ def run_ocr(image_path):
         }
 
     except Exception as e:
+        print("ERROR:", e)
+
         return {
             "success": False,
             "error": str(e),
